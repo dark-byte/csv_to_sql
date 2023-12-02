@@ -1,7 +1,9 @@
-import numpy as np
+import csv
 import pandas as pd
 
-df = pd.read_csv("MOCK_DATA.csv")
+file_name = "MOCK_DATA.csv"
+
+df = pd.read_csv(file_name)
 
 file = "MOCK_DATA"
 
@@ -18,4 +20,36 @@ replacements = {
 }
 
 col_str = ", ".join("{} {}".format(n, d) for (n, d) in zip(df.columns, df.dtypes.replace(replacements)))
-print(col_str)
+
+SQL_STATEMENT = f'CREATE TABLE IF NOT EXISTS {clean_tbl_name} ({col_str});'+'\n'
+
+insert_template = "INSERT INTO {} ({}) VALUES ({});"
+value_template = "({})"
+
+INSERT_STATEMENT = ""
+
+def format_value(value, data_type):
+    if data_type == 'int':
+        return str(value)
+    else:
+        value = value.replace("'", "")
+        return f"'{value}'"
+
+with open(file_name, newline='') as csvfile:
+    reader = csv.DictReader(csvfile)
+    headers = reader.fieldnames
+
+    values_list = []
+
+    for row in reader:
+        values = ', '.join([format_value(row[header], 'int' if row[header].isdigit() else 'str') for header in headers])
+        values_list.append(value_template.format(values))
+
+    columns = ', '.join(headers)
+    all_values = ', \n'.join(values_list)
+
+    INSERT_STATEMENT = insert_template.format(clean_tbl_name, columns, all_values)
+
+with open('test.sql', 'w') as f:
+    f.writelines(SQL_STATEMENT)
+    f.writelines(INSERT_STATEMENT)
