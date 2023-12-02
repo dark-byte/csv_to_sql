@@ -12,7 +12,7 @@ clean_tbl_name = file.lower().replace(" ", "_")
 df.columns = [x.lower().replace(" ", "_") for x in df.columns]
 
 replacements = {
-    'object': 'varchar',
+    'object': 'varchar(100)',
     'float64': 'float',
     'int64' : 'int',
     'datetime64': 'timestamp',
@@ -23,7 +23,7 @@ col_str = ", ".join("{} {}".format(n, d) for (n, d) in zip(df.columns, df.dtypes
 
 SQL_STATEMENT = f'CREATE TABLE IF NOT EXISTS {clean_tbl_name} ({col_str});'+'\n'
 
-insert_template = "INSERT INTO {} ({}) VALUES ({});"
+insert_template = "INSERT INTO {} ({}) VALUES {};"
 value_template = "({})"
 
 INSERT_STATEMENT = ""
@@ -50,6 +50,9 @@ with open(file_name, newline='') as csvfile:
 
     INSERT_STATEMENT = insert_template.format(clean_tbl_name, columns, all_values)
 
+
+DATABASE_STATEMENT = f'DROP DATABASE IF EXISTS {clean_tbl_name}_db;\nCREATE DATABASE {clean_tbl_name}_db;\nUSE {clean_tbl_name}_db;\n'
 with open('test.sql', 'w') as f:
+    f.writelines(DATABASE_STATEMENT)
     f.writelines(SQL_STATEMENT)
     f.writelines(INSERT_STATEMENT)
