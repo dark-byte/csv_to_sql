@@ -3,3 +3,4 @@ flask_wtf
 wtforms
 werkzeug
 flask_cors
+pandas
