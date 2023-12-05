@@ -9,11 +9,13 @@
 <body>
     <h1>CSV to MySQL Converter</h1>
 
-    <label for="file-input">Upload your CSV File</label>
+    <label class="upload-label">Upload your CSV File</label>
     <form method="post" enctype="multipart/form-data">
-        {{form.hidden_tag()}}
-        {{form.file()}}
-        {{form.submit()}}
+        <div class="input-container">
+            {{form.hidden_tag()}}
+            {{form.file()}}
+            {{ form.submit(class='custom-submit-btn') }}
+        </div>
     </form>
 </body>
 </html>

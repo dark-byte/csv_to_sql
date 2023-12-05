@@ -5,6 +5,8 @@ from werkzeug.utils import secure_filename
 import os
 from wtforms.validators import InputRequired
 from main import process_csv
+from flask_cors import CORS
+
 
 ALLOWED_EXT = set(['csv'])
 
@@ -15,10 +17,11 @@ def allowed_files(filename):
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "mysecretkeyisthis"
 app.config['UPLOAD_FOLDER'] = 'static/files'
+CORS(app)
 
 class UploadFileForm(FlaskForm):
-    file = FileField('File', validators=[InputRequired()])
-    submit = SubmitField("Upload File")
+    file = FileField('File', validators=[InputRequired()], id='file_input')
+    submit = SubmitField('Upload', render_kw={'class': 'custom-submit-btn'})
 
 @app.route("/", methods = ['GET', 'POST'])
 def home():
